@@ -196,10 +196,35 @@ document.addEventListener('DOMContentLoaded', function() {
       prizeName.textContent = spotInner.textContent;
       prizeName.style.visibility = 'visible';
       prizeName.style.zIndex = '20'; /* Update the z-index value */
+  
+      // Add event listener to hide prize on touch
+      prizePopup.addEventListener('touchstart', hidePrize);
+      prizePopup.addEventListener('click', hidePrize);
     }
   }
   
+  function hidePrize() {
+    prizePopup.classList.remove('show');
+    prizePopup.classList.add('hidden');
+    starImage.style.display = 'none';
   
+    // Hide the prize name
+    var prizeName = document.getElementById('prize-name');
+    prizeName.style.visibility = 'hidden';
+  
+    // Hide the spot inner text
+    var spotInners = document.querySelectorAll('.spot-inner');
+    spotInners.forEach(function(spotInner) {
+      spotInner.classList.remove('show');
+    });
+  
+    // Remove event listener to hide prize
+    prizePopup.removeEventListener('touchstart', hidePrize);
+    prizePopup.removeEventListener('click', hidePrize);
+  
+    // Allow spinning the wheel again
+    isSpinning = false;
+  } 
 
   ctx.font = '16px Arial';
   drawWheel();
