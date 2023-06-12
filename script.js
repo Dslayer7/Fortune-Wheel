@@ -17,6 +17,16 @@ document.addEventListener('DOMContentLoaded', function() {
   var isSpinning = false;
   var winningSpotIndex = -1; // Initialize with an invalid index
 
+  var joinButton = document.querySelector('.join-button');
+  var popupContainer = document.getElementById('popup-container');
+  var logoImage = document.querySelector('.logo-image');
+
+  joinButton.addEventListener('click', togglePopup);
+  logoImage.addEventListener('click', togglePopup);
+
+  function togglePopup() {
+    popupContainer.classList.toggle('show');
+  }
   function drawWheel() {
     var startAngle = 0;
 
@@ -104,6 +114,49 @@ document.addEventListener('DOMContentLoaded', function() {
         currentRotation += speed;
       }
     }, 1000 / 60); // 60 frames per second
+  }
+  
+  var wheelContainer = document.getElementById('wheel');
+
+  var startY = 0;
+  var currentY = 0;
+
+  wheelContainer.addEventListener('touchstart', handleTouchStart, false);
+  wheelContainer.addEventListener('touchmove', handleTouchMove, false);
+
+  wheelContainer.addEventListener('mousedown', handleMouseDown, false);
+  wheelContainer.addEventListener('mousemove', handleMouseMove, false);
+  wheelContainer.addEventListener('mouseup', handleMouseUp, false);
+
+  function handleTouchStart(event) {
+    startY = event.touches[0].clientY;
+  }
+
+  function handleTouchMove(event) {
+    event.preventDefault();
+    currentY = event.touches[0].clientY;
+    var deltaY = currentY - startY;
+
+    if (deltaY > 0) {
+      spinWheel();
+    }
+  }
+
+  function handleMouseDown(event) {
+    startY = event.clientY;
+  }
+
+  function handleMouseMove(event) {
+    event.preventDefault();
+    currentY = event.clientY;
+  }
+
+  function handleMouseUp(event) {
+    var deltaY = currentY - startY;
+
+    if (deltaY > 0) {
+      spinWheel();
+    }
   }
 
   function determineWinningSpot() {
