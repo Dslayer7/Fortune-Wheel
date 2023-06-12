@@ -140,12 +140,18 @@ body {
   left: calc(50% - 100px); /* Adjust the position as needed */
   width: 200px;
   height: 200px;
-  background-color: white;
+  background-image: url('japanese_pattern_bk.png'); /* Replace 'japanese_pattern_bk.png' with your image file path */
+  background-size: 1250px;
+  
+  background-repeat: no-repeat;
+  background-position: center;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
+
 
 .center-logo {
   max-width: 120px;
