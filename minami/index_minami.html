@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fortune Wheel</title>
+  <link rel="stylesheet" href="minami_styles.css">
+</head>
+<body>
+  <div id="image-overlay"></div>
+  <video id="video-background" autoplay loop muted>
+    <source src="light_bk.mp4" type="video/mp4">
+  </video>
+  
+  <div class="logo-container">
+    <img class="logo-image" src="all_logo.png" alt="Logo">
+  </div>
+
+  
+
+  <div id="document-container" class="hidden">
+    <div class="pop-up-content">
+      <div class="top-text">
+        <div class="top-text_container">
+          <p class="top-text_label">ALL - Accor Live Limitless</p>
+          <h1 class="top-text_title">Your lifestyle loyalty programme</h1>
+          <p class="top-text_subtitle">Discover a world of rewards, unique benefits and exceptional events. Experience the extraordinary.</p>
+        </div>
+      </div>
+           
+      <div class="columns-container">
+      <div class="column">
+        <img src="wandertheworld.jpg" alt="wandertheworld">
+        <h2>Enjoy exclusive savings</h2>
+        <p>Save up to 10% on bookings in more than 3,000 hotels.</p>
+      </div>
+  
+      <div class="column">
+        <img src="diningout.jpg" alt="diningout">
+        <h2>Earn points</h2>
+        <p>Be rewarded time and time again for your stays, outings, and visits to our restaurants and bars.</p>
+      </div>
+  
+      <div class="column">
+        <img src="benefitsandstatus.jpg" alt="benefitsandstatus">
+        <h2>Redeem your points</h2>
+        <p>Make the most of your points. Whether it’s stays, experiences or partners – the choice is yours!</p>
+      </div>
+  
+      <div class="column">
+        <img src="allaccorallthetime.jpg" alt="allaccorallthetime">
+        <h2>Enjoy unique benefits</h2>
+        <p>Depending on the number of nights stayed or points earned, your status is upgraded, unlocking even more benefits.</p>
+      </div>
+    </div>
+
+    <div class="bottom-text_container">
+      <h1>Join now and start enjoying!</h1>
+    </div>
+  
+    <div class="qr-code-container">
+      <img id="qr-code" src="qr_code.png" alt="QR Code">
+    </div>
+  </div>
+</div>
+  
+<div id="input-container" class="hidden">
+  <div class="input-content">
+    <div class="input-logo-container">
+      <img class="input-logo-image" src="all_logo.png" alt="Logo">
+    </div>
+    <h2>Introduce your member number to spin the wheel</h2>
+    <input id="digits-input" type="text" placeholder="Enter 16 digits">
+    <button id="submit-button">Submit</button>
+  </div>
+</div>
+  
+  
+  <div id="wheel">
+    <div class="spot">
+      <div class="spot-inner">Draft Beer</div>
+    </div>
+    <div class="spot">
+      <div class="spot-inner">Shrimp Dish</div>
+    </div>
+    <div class="spot">
+      <div class="spot-inner">Extra Salad</div>
+    </div>
+    <div class="spot">
+      <div class="spot-inner">5% off on your meal</div>
+    </div>
+    <div class="spot">
+      <div class="spot-inner">Try Again!!</div>
+    </div>
+    <div class="spot">
+      <div class="spot-inner">Glass of Beer</div>
+    </div>
+    <div class="spot">
+      <div class="spot-inner">No Prize...</div>
+    </div>
+    <div class="spot">
+      <div class="spot-inner">Glass of Wine</div>
+    </div>
+    <div class="spot">
+      <div class="spot-inner">Bar36 Cocktail</div>
+    </div>
+    <div class="spot">
+      <div class="spot-inner">Meat Upgrade</div>
+    </div>
+    <canvas id="canvas" width="850" height="850"></canvas>
+    <div id="arrow">
+      <img src="arrow_gold.png" alt="Arrow">
+    </div>
+    <div class="center-circle">
+      <img src="minami_logo.png" alt="Logo 2" class="center-logo">
+    </div>
+  </div>
+  <button id="spin-button">Spin the Wheel</button>
+
+  <div id="prize-popup" class="hidden">
+    <div id="star-container">
+      <img id="star-image" src="star.png" alt="Star" class="hidden">
+    </div>
+    <div id="prize-name"></div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var videoBackground = document.getElementById('video-background');
+      videoBackground.load();
+    });
+  </script>
+  
+  
+</body>
+</html>
