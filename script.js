@@ -10,23 +10,168 @@ document.addEventListener('DOMContentLoaded', function() {
   var arc = Math.PI / (spots.length / 2);
   var starImage = document.getElementById('star-image');
   var prizePopup = document.getElementById('prize-popup');
-  var probabilities = [50, 20, 0, 20, 0, 0, 0, 0, 0, 10]; // Customize the probabilities here
+  var video = document.getElementById('video-background');
+  video.playbackRate = 1.0; // video speed
+
+  var probabilities = [5, 10, 0, 10, 20, 15, 10, 15, 5, 10]; // Customize the probabilities here
 
   ctx.translate(wheelRadius, wheelRadius);
 
   var isSpinning = false;
   var winningSpotIndex = -1; // Initialize with an invalid index
 
-  var joinButton = document.querySelector('.join-button');
-  var popupContainer = document.getElementById('popup-container');
+ 
+  var documentContainer = document.getElementById('document-container');
   var logoImage = document.querySelector('.logo-image');
 
-  joinButton.addEventListener('click', togglePopup);
-  logoImage.addEventListener('click', togglePopup);
+  var digitsInput = document.getElementById('digits-input');
+  var submitButton = document.getElementById('submit-button');
+  var inputContainer = document.getElementById('input-container');
+  digitsInput.setAttribute('autocomplete', 'off');
 
-  function togglePopup() {
-    popupContainer.classList.toggle('show');
+
+  function isValidDigits(digits) {
+    // Check if the entered digits are valid
+    return /^[0-9A-Za-z]{16}$/.test(digits);
   }
+
+  function showInputPopup() {
+    console.log('Showing input popup');
+    inputContainer.style.display = 'flex';
+    inputContainer.classList.add('show');
+  }
+  
+  function hideInputPopup() {
+    inputContainer.style.display = 'none';
+  }
+
+  digitsInput.addEventListener('input', function() {
+    var inputText = this.value.trim(); // Remove leading/trailing white spaces
+  
+    // Limit the input to 16 characters
+    if (inputText.length > 16) {
+      inputText = inputText.slice(0, 16);
+    }
+  
+    // Update the input value with the sanitized version
+    this.value = inputText;
+  
+    // Enable/disable the submit button based on the number of characters
+    if (inputText.length === 16) {
+      submitButton.disabled = false;
+    } else {
+      submitButton.disabled = true;
+    }
+  });
+  
+  // Add a flag to track if the digits have been submitted
+var digitsSubmitted = false;
+
+function spinWheel() {
+  if (digitsSubmitted) {
+    if (!isSpinning) {
+      spinWheelAnimation();
+    }
+  } else {
+    var isValid = isValidDigits(digitsInput.value);
+    if (isValid) {
+      digitsSubmitted = true; 
+      setTimeout(function() {
+        hideInputPopup();
+        inputContainer.classList.remove('show');
+    }, 1);
+    } else {
+      showInputPopup();
+    }
+  }
+}
+
+submitButton.addEventListener('click', function(event) {
+  event.preventDefault(); // Prevent the default form submission behavior
+  if (!digitsSubmitted) {
+    spinWheel();
+  }
+});
+
+  
+
+  function determineWinningSpot() {
+    var totalProbability = probabilities.reduce((sum, probability) => sum + probability, 0);
+    var randomValue = Math.random() * totalProbability;
+    var cumulativeProbability = 0;
+
+    for (var index = 0; index < spots.length; index++) {
+      cumulativeProbability += probabilities[index];
+      if (randomValue < cumulativeProbability) {
+        return index;
+      }
+    }
+
+    return -1; // No winning spot found
+  }
+
+  function showPrizePopup() {
+    prizePopup.classList.remove('hidden');
+    prizePopup.classList.add('show');
+    starImage.style.display = 'block';
+
+    if (winningSpotIndex !== -1) {
+      var winningSpot = spots[winningSpotIndex];
+      var spotInner = winningSpot.querySelector('.spot-inner');
+
+      spotInner.classList.add('show');
+
+      // Hide other spot text
+      Array.from(spots).forEach(function(spot, index) {
+        if (index !== winningSpotIndex) {
+          spot.querySelector('.spot-inner').classList.remove('show');
+        }
+      });
+
+      var prizeName = document.getElementById('prize-name');
+      prizeName.textContent = spotInner.textContent;
+      prizeName.style.visibility = 'visible';
+      prizeName.style.zIndex = '20'; /* Update the z-index value */
+
+      // Add event listener to hide prize on touch or click
+      prizePopup.addEventListener('touchstart', hidePrize);
+      prizePopup.addEventListener('click', hidePrize);
+    }
+  }
+
+  function reloadPage() {
+    location.reload();
+  }
+  
+
+  function hidePrize() {
+    prizePopup.classList.remove('show');
+    prizePopup.classList.add('hidden');
+    starImage.style.display = 'none';
+
+    // Hide the prize name
+    var prizeName = document.getElementById('prize-name');
+    prizeName.style.visibility = 'hidden';
+
+    // Hide the spot inner text
+    var spotInners = document.querySelectorAll('.spot-inner');
+    spotInners.forEach(function(spotInner) {
+      spotInner.classList.remove('show');
+    });
+
+    // Remove event listener to hide prize
+    prizePopup.removeEventListener('touchstart', hidePrize);
+    prizePopup.removeEventListener('click', hidePrize);
+
+    // Allow spinning the wheel again
+    isSpinning = false;
+
+    // Reload the page
+    setTimeout(function() {
+      location.reload();
+    }, 60);
+  }  
+
   function drawWheel() {
     var startAngle = 0;
 
@@ -88,46 +233,6 @@ document.addEventListener('DOMContentLoaded', function() {
     return lines;
   }
 
-  function spinWheel() {
-    if (isSpinning) {
-      return; // Exit if the wheel is already spinning
-    }
-
-    isSpinning = true;
-    var spinDegrees = Math.floor(Math.random() * 360);
-    totalRotation = 1800 + spinDegrees;
-
-    var spinAnimation = setInterval(function() {
-      ctx.clearRect(-wheelRadius, -wheelRadius, canvas.width, canvas.height);
-      ctx.save();
-      ctx.rotate(currentRotation * Math.PI / 180);
-      drawWheel();
-      ctx.restore();
-
-      if (currentRotation >= totalRotation) {
-        clearInterval(spinAnimation);
-        currentRotation %= 360; // Ensure currentRotation stays within 0-359 degrees
-        winningSpotIndex = determineWinningSpot();
-        showPrizePopup();
-        isSpinning = false; // Set isSpinning to false after the spin animation ends
-      } else {
-        currentRotation += speed;
-      }
-    }, 1000 / 60); // 60 frames per second
-  }
-  
-  var wheelContainer = document.getElementById('wheel');
-
-  var startY = 0;
-  var currentY = 0;
-
-  wheelContainer.addEventListener('touchstart', handleTouchStart, false);
-  wheelContainer.addEventListener('touchmove', handleTouchMove, false);
-
-  wheelContainer.addEventListener('mousedown', handleMouseDown, false);
-  wheelContainer.addEventListener('mousemove', handleMouseMove, false);
-  wheelContainer.addEventListener('mouseup', handleMouseUp, false);
-
   function handleTouchStart(event) {
     startY = event.touches[0].clientY;
   }
@@ -159,83 +264,72 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  function determineWinningSpot() {
-    var totalProbability = probabilities.reduce((sum, probability) => sum + probability, 0);
-    var randomValue = Math.random() * totalProbability;
-    var cumulativeProbability = 0;
+  function togglePopup() {
+    documentContainer.classList.toggle('show');
+  }
 
-    for (var index = 0; index < spots.length; index++) {
-      cumulativeProbability += probabilities[index];
-      if (randomValue < cumulativeProbability) {
-        return index;
+  function spinWheelAnimation() {
+    if (isSpinning) {
+      return; // Exit if the wheel is already spinning
+    }
+
+    isSpinning = true;
+    var spinDegrees = Math.floor(Math.random() * 360);
+    totalRotation = 1800 + spinDegrees;
+
+    var spinAnimation = setInterval(function() {
+      ctx.clearRect(-wheelRadius, -wheelRadius, canvas.width, canvas.height);
+      ctx.save();
+      ctx.rotate(currentRotation * Math.PI / 180);
+      drawWheel();
+      ctx.restore();
+
+      if (currentRotation >= totalRotation) {
+        clearInterval(spinAnimation);
+        currentRotation %= 360; // Ensure currentRotation stays within 0-359 degrees
+        winningSpotIndex = determineWinningSpot();
+        showPrizePopup();
+        isSpinning = false; // Set isSpinning to false after the spin animation ends
+      } else {
+        currentRotation += speed;
       }
-    }
-
-    return -1; // No winning spot found
+    }, 1000 / 60); // 60 frames per second
+    digitsSubmitted = false; 
   }
 
-  function showPrizePopup() {
-    prizePopup.classList.remove('hidden');
-    prizePopup.classList.add('show');
-    starImage.style.display = 'block';
-  
-    if (winningSpotIndex !== -1) {
-      var winningSpot = spots[winningSpotIndex];
-      var spotInner = winningSpot.querySelector('.spot-inner');
-  
-      spotInner.classList.add('show');
-  
-      // Hide other spot text
-      Array.from(spots).forEach(function(spot, index) {
-        if (index !== winningSpotIndex) {
-          spot.querySelector('.spot-inner').classList.remove('show');
-        }
-      });
-  
-      var prizeName = document.getElementById('prize-name');
-      prizeName.textContent = spotInner.textContent;
-      prizeName.style.visibility = 'visible';
-      prizeName.style.zIndex = '20'; /* Update the z-index value */
-  
-      // Add event listener to hide prize on touch
-      prizePopup.addEventListener('touchstart', hidePrize);
-      prizePopup.addEventListener('click', hidePrize);
+  var wheelContainer = document.getElementById('wheel');
+  var startY = 0;
+  var currentY = 0;
+
+  wheelContainer.addEventListener('touchstart', handleTouchStart, false);
+  wheelContainer.addEventListener('touchmove', handleTouchMove, false);
+  wheelContainer.addEventListener('mousedown', handleMouseDown, false);
+  wheelContainer.addEventListener('mousemove', handleMouseMove, false);
+  wheelContainer.addEventListener('mouseup', handleMouseUp, false);
+
+ 
+  logoImage.addEventListener('click', togglePopup);
+
+  submitButton.addEventListener('click', showInputPopup); // Updated event listener
+  document.addEventListener('click', function(event) {
+    var documentContainer = document.getElementById('document-container');
+    var target = event.target;
+
+    // Check` if the clicked element is outside of the document container
+    if (
+      !documentContainer.contains(target) &&
+      target !== documentContainer &&
+      !target.classList.contains('logo-image')
+    ) {
+      documentContainer.classList.remove('show');
     }
-  }
-  
-  function hidePrize() {
-    prizePopup.classList.remove('show');
-    prizePopup.classList.add('hidden');
-    starImage.style.display = 'none';
-  
-    // Hide the prize name
-    var prizeName = document.getElementById('prize-name');
-    prizeName.style.visibility = 'hidden';
-  
-    // Hide the spot inner text
-    var spotInners = document.querySelectorAll('.spot-inner');
-    spotInners.forEach(function(spotInner) {
-      spotInner.classList.remove('show');
-    });
-  
-    // Remove event listener to hide prize
-    prizePopup.removeEventListener('touchstart', hidePrize);
-    prizePopup.removeEventListener('click', hidePrize);
-  
-    // Allow spinning the wheel again
-    isSpinning = false;
-  } 
+  });
 
   ctx.font = '16px Arial';
   drawWheel();
 
   var spinButton = document.getElementById('spin-button');
-  spinButton.addEventListener('click', spinWheel);
-});
-
-const joinButton = document.querySelector('.join-button');
-  const popupContainer = document.getElementById('popup-container');
-
-  joinButton.addEventListener('click', () => {
-    popupContainer.classList.toggle('show');
-  });
+  spinButton.addEventListener('click', function() {
+    showInputPopup();
+ });
+})
