@@ -1,45 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Fortune Wheel Main Page</title>
-  <link rel="stylesheet" type="text/css" href="styles.css">
+  <title>Fortune Wheel</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body style="background-image: url('Swisscircles_bk.png');">
-  <div class="container">
-    <h1>Welcome to the Fortune Wheel</h1>
-    <div class="table-container">
-      <div class="row">
-        <div class="cell">
-          <img src="swiss_logo.png" alt="Swissotel Logo" class="swiss_logo">
-        </div>
-        <div class="cell">
-          <a href="hana/index_hana.html" class="wheel-button">
-            <span class="button-text">Swissotel</span>
-          </a>
-        </div>
-      </div>
-      <div class="row">
-        <div class="cell">
-          <img src="hg_logo.png" alt="Hana Logo" class="hana_logo">
-        </div>
-        <div class="cell">
-          <a href="hana/index_hana.html" class="wheel-button">
-            <span class="button-text">Hana-Goyomi</span>
-          </a>
-        </div>
-      </div>
-      <div class="row">
-        <div class="cell">
-          <img src="minami_logo.png" alt="Minami Logo" class="minami_logo">
-        </div>
-        <div class="cell">
-          <a href="minami/index_minami.html" class="wheel-button">
-            <span class="button-text">Minami</span>
-          </a>
-        </div>
-      </div>
-      <!-- Add more rows with logos and buttons -->
+<body>
+  <div id="image-overlay"></div>
+  <video id="video-background" autoplay loop muted>
+    <source src="space_bk.mp4" type="video/mp4">
+  </video>
+  <div class="logo-container">
+    <img class="logo-image" src="all_logo.png" alt="Logo">
+  </div>
+
+  <button class="join-button">Join for Free</button>
+
+  <div id="popup-container" class="hidden">
+    <img id="popup-image" src="qr_code.png" alt="QR Code">
+  </div>
+
+  <div id="wheel">
+    <div class="spot">
+      <div class="spot-inner">Green Tea</div>
+    </div>
+    <div class="spot">
+      <div class="spot-inner">Piece of Sushi</div>
+    </div>
+    <div class="spot">
+      <div class="spot-inner">Cold Appetaizer</div>
+    </div>
+    <div class="spot">
+      <div class="spot-inner">Hot Appetaizer</div>
+    </div>
+    <div class="spot">
+      <div class="spot-inner">Try Again!!</div>
+    </div>
+    <div class="spot">
+      <div class="spot-inner">Glass of Beer</div>
+    </div>
+    <div class="spot">
+      <div class="spot-inner">No Prize...</div>
+    </div>
+    <div class="spot">
+      <div class="spot-inner">Glass of Wine</div>
+    </div>
+    <div class="spot">
+      <div class="spot-inner">Bar36 Cocktail</div>
+    </div>
+    <div class="spot">
+      <div class="spot-inner">Sake cup</div>
+    </div>
+    <canvas id="canvas" width="750" height="750"></canvas>
+    <div id="arrow">
+      <img src="arrow_gold.png" alt="Arrow">
+    </div>
+    <div class="center-circle">
+      <img src="hg_logo.png" alt="Logo 2" class="center-logo">
     </div>
   </div>
+  <button id="spin-button">Spin the Wheel</button>
+
+  <div id="prize-popup" class="hidden">
+    <div id="star-container">
+      <img id="star-image" src="star.png" alt="Star" class="hidden">
+    </div>
+    <div id="prize-name"></div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
